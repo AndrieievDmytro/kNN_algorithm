@@ -1,4 +1,4 @@
-package old
+package main
 
 import (
 	"encoding/csv"
@@ -138,7 +138,7 @@ func (ts *Flowers) calcDistances(tr *Flowers) {
 			ts.Fl[i].Distances[k].Distance = distance // Fill distance (link)
 			ts.Fl[i].Distances[k].Index = j           // Fill linked element
 		}
-		// fmt.Println(ts.Fl[i].Name, ts.Fl[i].Params, ts.Fl[i].Distances)
+		fmt.Println(ts.Fl[i].Name, ts.Fl[i].Params, ts.Fl[i].Distances)
 	}
 }
 
@@ -149,14 +149,14 @@ func (flower *Flower) groupByName(tr *Flowers, itt int) []FlowersNamesCount {
 	for i := 0; i < len(flower.Distances) && i <= itt; i++ {
 		j := 0
 		for ; j < len(trFlowers); j++ {
-			ok := (trFlowers[j].name == tr.Fl[flower.Distances[j].Index].Name)
+			ok := (trFlowers[j].name == tr.Fl[flower.Distances[i].Index].Name)
 			if ok {
 				trFlowers[j].count++
 				break
 			}
 		}
 		if j == len(trFlowers) {
-			trFlowers = append(trFlowers, FlowersNamesCount{name: tr.Fl[flower.Distances[j].Index].Name, count: 1})
+			trFlowers = append(trFlowers, FlowersNamesCount{name: tr.Fl[flower.Distances[i].Index].Name, count: 1})
 		}
 	}
 	return trFlowers
