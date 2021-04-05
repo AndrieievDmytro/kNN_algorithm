@@ -13,10 +13,9 @@ import (
 )
 
 var (
-	trainFile    string = "data\\trains.csv" //data file
-	testFile     string = "data\\test.csv"   //data file
-	paramsNumber int    = 4                  //float parameters count
-	k            int                         // k number of neigbours
+	trainFile string = "data\\trains.csv" //data file
+	testFile  string = "data\\test.csv"   //data file
+	k         int                         // k number of neigbours
 )
 
 type Flower struct {
@@ -42,7 +41,6 @@ type FlowersNamesCount struct {
 
 func init() {
 	flag.IntVar(&k, "k", k, "number of neigbours to analyze")
-	flag.IntVar(&paramsNumber, "p", paramsNumber, "float parameters count")
 	flag.StringVar(&trainFile, "tr", trainFile, "train-file")
 	flag.StringVar(&testFile, "ts", testFile, "test-file")
 }
@@ -75,24 +73,20 @@ func convertStrArrayToJson(records [][]string) string {
 	// Converting from array of string to JSON
 	jsonData := ""
 	strNum := 0
+	paramsLength := len(records[1]) - 1
 	for _, record := range records {
 		wrongStr := false
-		if len(record) < paramsNumber || len(record) > paramsNumber+1 {
-			// fmt.Println("Wrong parameters count in " + path)
+		if len(record) < paramsLength || len(record) > paramsLength+1 {
 			fmt.Println("Wrong parameters count")
 			wrongStr = true
 		}
-		var flName string
-		if len(record) == paramsNumber+1 {
-			flName = record[len(record)-1] // Cutting flower name
-			record = record[:len(record)-1]
-		}
+		flName := record[len(record)-1] // Cutting flower name
+		record = record[:len(record)-1]
 		strNum++
 		stringArray := "["                // Opening sq bracket
 		for _, arrField := range record { // Filling string representation of array
 			_, err := strconv.ParseFloat(arrField, 64)
 			if err != nil {
-				// fmt.Println("Wrong parameters type "+path+" in string: ", strNum)
 				fmt.Println("Wrong parameters type in string: ", strNum)
 				wrongStr = true
 			}
@@ -138,7 +132,7 @@ func (ts *Flowers) calcDistances(tr *Flowers) {
 			ts.Fl[i].Distances[k].Distance = distance // Fill distance (link)
 			ts.Fl[i].Distances[k].Index = j           // Fill linked element
 		}
-		fmt.Println(ts.Fl[i].Name, ts.Fl[i].Params, ts.Fl[i].Distances)
+		// fmt.Println(ts.Fl[i].Name, ts.Fl[i].Params, ts.Fl[i].Distances)
 	}
 }
 
