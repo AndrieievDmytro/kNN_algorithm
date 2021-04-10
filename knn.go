@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"flag"
@@ -13,9 +14,10 @@ import (
 )
 
 var (
-	trainFile string = "data\\trains.csv" //data file
-	testFile  string = "data\\test.csv"   //data file
-	k         int                         // k number of neigbours
+	trainFile    string = "data\\trains.txt" //data file
+	testFile     string = "input"            //data file
+	k            int                         // k number of neigbours
+	manualVector string
 )
 
 type Flower struct {
@@ -46,14 +48,30 @@ func init() {
 }
 
 func readCsv(path string) ([][]string, error) {
-	dataFile, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	var dataFile *os.File
+	var err error
+
+	if path != "input" {
+		dataFile, err = os.OpenFile(path, os.O_RDONLY, 0666)
+	}
+	// dataFile, err := os.OpenFile(path, os.O_RDONLY, 0666)
 	if err != nil {
 		return nil, err
 	}
-	defer dataFile.Close()
+	if path != "input" {
+		defer dataFile.Close()
+	}
 	if err == nil {
+		var buf []byte
+		var rerr error
 		// Reading text from file
-		buf, rerr := ioutil.ReadAll(dataFile)
+		if path != "input" {
+			buf, rerr = ioutil.ReadAll(dataFile)
+		} else {
+			buf = []byte(manualVector)
+			rerr = nil
+		}
+		// buf, rerr := ioutil.ReadAll(dataFile)
 		if rerr != nil {
 			return nil, err
 		}
@@ -73,7 +91,7 @@ func convertStrArrayToJson(records [][]string) string {
 	// Converting from array of string to JSON
 	jsonData := ""
 	strNum := 0
-	paramsLength := len(records[1]) - 1
+	paramsLength := len(records[0]) - 1
 	for _, record := range records {
 		wrongStr := false
 		if len(record) < paramsLength || len(record) > paramsLength+1 {
@@ -176,6 +194,12 @@ func printResult() {
 	tr := new(Flowers)
 	tr.readData(trainFile) // Filling train data
 	ts := new(Flowers)
+	if testFile == "input" {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter the vector: ")
+		manualVector, _ = reader.ReadString('\n')
+		fmt.Print(manualVector)
+	}
 	ts.readData(testFile) // Filling testing data
 	ts.calcDistances(tr)  // Calculating distances
 	if k > len(tr.Fl) {
